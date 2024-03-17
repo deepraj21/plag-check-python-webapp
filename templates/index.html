@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/bootstrap.min.css.map">
+    <link rel="stylesheet" href="../static/style-login.css">
+    <link rel="stylesheet" href="../static/style.css">
+    <title>Turnitin Plagiarism Checker</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    background-color: #f6f2e8;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 6%;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #727068;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #44433d;
+}
+
+.result {
+    margin-top: 20px;
+}
+
+.error {
+    color: #ff0000;
+    margin-top: 20px;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Plagiarism Checker</h1>
+        <form method="post">
+            <label for="text_to_check">Input text to check Plagiarism:</label>
+            <textarea name="text_to_check" id="text_to_check" required>{{ text_to_check }}</textarea>
+            <center><button type="submit">Check Plagiarism</button></center>
+            
+        </form>
+
+        {% if result %}
+            <div class="result">
+                <p><strong>Word count:</strong> {{ result.word_count }}</p>
+                <p><strong>Depth index:</strong> {{ result.turnitin_index }}</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Link</th>
+                            <th>Plag-Percent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for match in result.matches %}
+                            <tr>
+                                <td>
+                                    <a href="{{ match.url }}" {% if match.percent|default(0)|float > 80 %} style="color: red;" {% endif %}>{{ match.url }}</a>
+                                </td>
+                                <td>{{ match.percent }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+        
+        {% if result and result.error %}
+            <p class="error">{{ result.error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
